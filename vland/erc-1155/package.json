@@ -1,0 +1,27 @@
+{
+  "name": "vland-erc-1155",
+  "version": "1.0.0",
+  "description": "Solidity Smart Contracts ERC-1155 standard for NFTs that represent lands, buildings, roads etc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olich97/nft-smart-contracts.git"
+  },
+  "keywords": [
+    "nft",
+    "solidity",
+    "erc-1155"
+  ],
+  "author": "Oleh Andrushko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/olich97/nft-smart-contracts/issues"
+  },
+  "homepage": "https://github.com/olich97/nft-smart-contracts#readme",
+  "devDependencies": {
+    "hardhat": "^2.8.2"
+  }
+}

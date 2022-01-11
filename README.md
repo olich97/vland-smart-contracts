@@ -1,2 +1,2 @@
 # nft-smart-contracts
-A collection of nft smart contracts examples
+A collection of solidity smart contracts for nfts
