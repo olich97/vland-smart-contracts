@@ -1,0 +1,17 @@
+{
+   "name": "Bardi, Piazza Vittoria",
+   "image": "https://map.cryptovoxels.com/tile/parcel?x=-14.68&y=-10.66",
+   "description": "500x500 parcel of city main square",
+   "attributes":{
+      "width": 500,
+      "height": 500,
+      "elevation": 637,
+	   "latitude": 44.632004,
+	   "longitude": 9.731237,
+      "country": "Italy",
+      "province": "Parma",
+      "region": "Emilia Romagna"
+   },
+   "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9",
+   "background_color":"f3f3f3"
+}
