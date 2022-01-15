@@ -1,19 +1,19 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-describe('Greeter', function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory('Greeter');
-    const greeter = await Greeter.deploy('Hello, world!');
-    await greeter.deployed();
+describe('Land', function () {
+  it("Should return a new land token", async function () {
+    const LandFactory = await ethers.getContractFactory('Land');
+    const landContract = await LandFactory.deploy();
+    await landContract.deployed();
 
-    expect(await greeter.greet()).to.equal('Hello, world!');
+    //expect(await landContract.createLand()).to.equal('Hello, world!');
 
-    const setGreetingTx = await greeter.setGreeting('Hola, mundo!');
+    const setGreetingTx = await landContract.mintLand('','');
 
     // wait until the transaction is mined
     await setGreetingTx.wait();
 
-    expect(await greeter.greet()).to.equal('Hola, mundo!');
+    //expect(await greeter.greet()).to.equal('Hola, mundo!');
   });
 });
