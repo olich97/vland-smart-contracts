@@ -22,14 +22,14 @@ contract Land is ERC721URIStorage, Ownable {
     /// @dev Used create a new land nft with token url metadata
     /// @param to address for a receiver of newly created nft 
     /// @param tokenURI url for token metadata
-    function mintLand(address to, string memory tokenURI)
+    function mintLand(address _to, string memory _tokenURI)
         public onlyOwner
         returns (uint256)
     {
         _tokenIds.increment();          
         uint256 newItemId = _tokenIds.current();
-        _mint(to, newItemId);
-        _setTokenURI(newItemId, tokenURI);          
+        _mint(_to, newItemId);
+        _setTokenURI(newItemId, _tokenURI);          
         return newItemId;
     }
 }
