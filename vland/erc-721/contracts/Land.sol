@@ -20,8 +20,8 @@ contract Land is ERC721URIStorage, Ownable {
     constructor() public ERC721("VLand", "LND") {}
 
     /// @dev Used create a new land nft with token url metadata
-    /// @param to address for a receiver of newly created nft 
-    /// @param tokenURI url for token metadata
+    /// @param _to address for a receiver of newly created nft 
+    /// @param _tokenURI url for token metadata
     function mintLand(address _to, string memory _tokenURI)
         public onlyOwner
         returns (uint256)
