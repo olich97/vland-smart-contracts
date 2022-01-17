@@ -30,7 +30,7 @@ describe('Land', function () {
 
   it("Should correctly mint land nft", async function () {
     const landContract = await land.connect(contractOwner);
-    const tokenMetadataUrl = 'http://www.example/tokens/1/metadata.json';
+    const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
     const tokenId = 1;
     
     expect(

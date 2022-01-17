@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract Land is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    // tokentId -> tokenUri
     mapping (uint256 => string) private _tokenURIs;
 
     constructor() public ERC721("VLand", "LND") {}

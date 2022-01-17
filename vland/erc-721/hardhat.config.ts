@@ -25,7 +25,18 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.4",
+  solidity: {
+    version: "0.8.4",
+    settings: {
+      // property of the solidity compiler
+      // maximize gas cost savings by taking into consideration how many times the bytecode is expected to run (lifetime) 
+      // and the cost of introducing an optimization at compile time
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
   networks: {
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
@@ -39,7 +50,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
-  },
+  } 
 };
 
 export default config;
