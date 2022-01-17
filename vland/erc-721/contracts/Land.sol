@@ -9,27 +9,44 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // needed as our smart contract needs a counter to keep track of the total number of NFTs minted 
 // and assign the unique ID on our new NFT
 import "@openzeppelin/contracts/utils/Counters.sol";
-// ERC721 standard extension for token metadata storage
-// @notice A more flexible but more expensive way of storing metadata
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract Land is ERC721URIStorage, Ownable {
+contract Land is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    mapping (uint256 => string) private _tokenURIs;
 
     constructor() public ERC721("VLand", "LND") {}
 
     /// @dev Used create a new land nft with token url metadata
-    /// @param _to address for a receiver of newly created nft 
+    /// @param to address for a receiver of newly created nft 
     /// @param _tokenURI url for token metadata
-    function mintLand(address _to, string memory _tokenURI)
+    function mintLand(address to, string memory _tokenURI)
         public onlyOwner
         returns (uint256)
     {
         _tokenIds.increment();          
         uint256 newItemId = _tokenIds.current();
-        _mint(_to, newItemId);
+        _safeMint(to, newItemId);
         _setTokenURI(newItemId, _tokenURI);          
         return newItemId;
+    }
+
+    /// @dev Sets the metadata associated with the token.
+    /// @param tokenId target token id
+    /// @param _tokenURI uri of metadata
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual
+    {
+        require(_exists(tokenId), "ERC721 Metadata: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+    
+    /// @dev Effectively grabs the token metadata uri
+    /// @param tokenId target token
+    function tokenURI(uint256 tokenId) public view virtual override
+        returns (string memory)
+    {
+        require(_exists(tokenId), "ERC721 Metadata: URI query of nonexistent token");
+        string memory _tokenURI = _tokenURIs[tokenId];
+        return _tokenURI;
     }
 }

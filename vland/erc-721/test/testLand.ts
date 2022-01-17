@@ -24,21 +24,25 @@ describe('Land', function () {
     land = (await deployContract(contractOwner, landArtifact)) as unknown as Land;
   });
  
-  it("Should set the right owner", async () => {
+  it("Should set the right contract owner", async () => {
     expect(await land.owner()).to.equal(contractOwner.address);
   });
 
   it("Should correctly mint land nft", async function () {
     const landContract = await land.connect(contractOwner);
     const tokenMetadataUrl = 'http://www.example/tokens/1/metadata.json';
+    const tokenId = 1;
     
     expect(
       await landContract.mintLand(nftOwner1.address, tokenMetadataUrl)
     )
     .to.emit(land, "Transfer")
-    .withArgs(ethers.constants.AddressZero, nftOwner1.address, 1);
-      
-    const tokenUri = await landContract.tokenURI(1);
+    .withArgs(ethers.constants.AddressZero, nftOwner1.address, tokenId);
+    // check nft metadata 
+    const tokenUri = await landContract.tokenURI(tokenId);
     expect(tokenUri).to.equal(tokenMetadataUrl);
+    // check nft owner
+    const tokenOwner = await landContract.ownerOf(tokenId);
+    expect(tokenOwner).to.equal(nftOwner1.address);
   });
 });
