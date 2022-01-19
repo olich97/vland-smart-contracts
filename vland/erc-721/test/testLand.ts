@@ -30,17 +30,20 @@ describe('Land', function () {
 
   it("Should correctly mint land nft", async function () {
     const landContract = await land.connect(contractOwner);
+    const tokenGeohash = 'dr5revd'; //https://www.movable-type.co.uk/scripts/geohash.html
     const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
     const tokenId = 1;
     
     expect(
-      await landContract.mintLand(nftOwner1.address, tokenMetadataUrl)
+      await landContract.mintLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
     )
     .to.emit(land, "Transfer")
     .withArgs(ethers.constants.AddressZero, nftOwner1.address, tokenId);
     // check nft metadata 
     const tokenUri = await landContract.tokenURI(tokenId);
+    const geohashTokenId = await landContract.tokenFromGeohash(tokenGeohash);
     expect(tokenUri).to.equal(tokenMetadataUrl);
+    expect(geohashTokenId).to.equal(tokenId);
     // check nft owner
     const tokenOwner = await landContract.ownerOf(tokenId);
     expect(tokenOwner).to.equal(nftOwner1.address);
