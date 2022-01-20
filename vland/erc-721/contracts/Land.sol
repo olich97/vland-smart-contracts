@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // and assign the unique ID on our new NFT
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+import "hardhat/console.sol";
+
 contract Land is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -71,6 +73,20 @@ contract Land is ERC721, Ownable {
         return _geohashTokens[_geohash];
     }
 
+     /**
+     * @dev Retrive owner of geohash
+     * @param _geohash target geohash
+     */
+    function ownerOfGeohash(string memory _geohash) 
+        public 
+        view 
+        returns (address)
+    {
+        require(_geohashExists(_geohash), "Geohash query of nonexistent geohash");
+        uint256 tokenId = this.tokenFromGeohash(_geohash);        
+        return super.ownerOf(tokenId);
+    }
+
     /**
      * @dev Sets the metadata associated with the token.
      * @param tokenId target token
@@ -91,9 +107,9 @@ contract Land is ERC721, Ownable {
      */
     function _setGeohashToken(string memory _geohash, uint256 tokenId) 
         internal
-    {
+    {  
         require(_exists(tokenId), "Geohash set of nonexistent token");
-        require(_geohashExists(_geohash), "Geohash was already used, the land was already minted");
+        require(!_geohashExists(_geohash), "Geohash was already used, the land was already minted");
         _geohashTokens[_geohash] = tokenId;
     }
 
@@ -105,7 +121,6 @@ contract Land is ERC721, Ownable {
         if(_geohashTokens[_geohash] == 0) {
             return false;
         }
-        
         return true;
     }
 
