@@ -10,8 +10,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // and assign the unique ID on our new NFT
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "hardhat/console.sol";
-
 contract Land is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
