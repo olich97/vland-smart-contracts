@@ -42,7 +42,7 @@ describe('Land Contract', function () {
       const tokenId = 1;
       
       expect(
-        await landContract.mintLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
+        await landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
       )
       .to.emit(land, "Transfer")
       .withArgs(ethers.constants.AddressZero, nftOwner1.address, tokenId);
@@ -67,18 +67,18 @@ describe('Land Contract', function () {
       const tokenGeohash = 'dr5revd23'; //https://www.movable-type.co.uk/scripts/geohash.html
       const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
 
-      await landContract.mintLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl);
+      await landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl);
  
       await expect(
-        landContract.mintLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
-      ).to.eventually.be.rejectedWith('Geohash was already used, the land was already minted');
+        landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
+      ).to.eventually.be.rejectedWith('Geohash was already used, the land was already created');
     });
   });
 
   describe('Transfer', function () {    
     it("should transfer token between accounts", async function () {
       const landContract = await land.connect(contractOwner);      
-      await landContract.mintLand(nftOwner1.address, 'sadsa2', 'http://www.example.com/tokens/1/metadata.json');
+      await landContract.createLand(nftOwner1.address, 'sadsa2', 'http://www.example.com/tokens/1/metadata.json');
       const tokenId = await landContract.tokenFromGeohash('sadsa2');   
 
       await land.connect(contractOperator)['safeTransferFrom(address,address,uint256)'](nftOwner1.address, nftOwner2.address, tokenId);

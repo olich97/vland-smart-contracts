@@ -10,6 +10,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // and assign the unique ID on our new NFT
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+/**
+ * @title Contract for Land non fungible token
+ * @author Oleh Andrushko (https://olich.me)
+ * @dev In combination with land metadata, the contact store (on-chain) a geohash (https://en.wikipedia.org/wiki/Geohash) 
+ *      unique string for each land. The geohash code could be useful for uniqueness of land tokens
+ */
 contract Land is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -17,28 +23,28 @@ contract Land is ERC721, Ownable {
     // tokentId -> tokenUri
     mapping (uint256 => string) private _tokenURIs;
 
-    // in order to have more uniqueness for tokens
-    // geohash -> tokentId: https://en.wikipedia.org/wiki/Geohash
+    // geohash -> tokenId
     mapping (string => uint256) private _geohashTokens;
 
     constructor() public ERC721("VLand", "LND") {}
 
     /**
-     * @dev Used create a new land nft with token url metadata
+     * @dev Used create a new land nft with token url metadata and unique geohash
      * @param to address for a receiver of newly created nft 
-     * @param _geohash url for token metadata
+     * @param _geohash geohash string
      * @param _tokenURI url for token metadata
      */
-    function mintLand(address to, string memory _geohash, string memory _tokenURI)
+    function createLand(address to, string memory _geohash, string memory _tokenURI)
         public 
         onlyOwner
         returns (uint256)
-    {
+    {        
+        require(!_geohashExists(_geohash), "Geohash was already used, the land was already created");
         _tokenIds.increment();          
         uint256 newItemId = _tokenIds.current();
         _safeMint(to, newItemId);
-        _setTokenURI(newItemId, _tokenURI); 
-        _setGeohashToken(_geohash, newItemId);            
+        _setTokenURI(newItemId, _tokenURI);
+        _setTokenGeohash(newItemId, _geohash);
         return newItemId;
     }
       
@@ -88,7 +94,7 @@ contract Land is ERC721, Ownable {
     /**
      * @dev Sets the metadata associated with the token.
      * @param tokenId target token
-     * @param _tokenURI uri of metadata
+     * @param _tokenURI url of metadata
      */
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) 
         internal 
@@ -103,23 +109,23 @@ contract Land is ERC721, Ownable {
      * @param _geohash geohash string
      * @param tokenId target token id
      */
-    function _setGeohashToken(string memory _geohash, uint256 tokenId) 
+    function _setTokenGeohash(uint256 tokenId, string memory _geohash) 
         internal
     {  
         require(_exists(tokenId), "Geohash set of nonexistent token");
-        require(!_geohashExists(_geohash), "Geohash was already used, the land was already minted");
         _geohashTokens[_geohash] = tokenId;
     }
 
+    /**
+     * @dev Returns whether `geohash` exists
+     * @param _geohash geohash string
+     */
     function _geohashExists(string memory _geohash) 
         internal
         view 
         returns (bool)
     {        
-        if(_geohashTokens[_geohash] == 0) {
-            return false;
-        }
-        return true;
+        return _geohashTokens[_geohash] != 0;
     }
 
 }
