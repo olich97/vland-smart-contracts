@@ -8,6 +8,7 @@ Description goes here ...
 npm run compile
 ```
 ### Run tests:
+> Note: sometime you need to run the command twice (if receive imports error) because for some reason VS not refreshing dependencies at first time
 ```shell
 npm run test
 ```

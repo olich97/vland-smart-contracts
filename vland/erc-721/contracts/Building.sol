@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 import "./BaseAsset.sol";
 
 /**
- * @title Contract for Land non fungible token
+ * @title Contract for building asset non fungible token
  * @author Oleh Andrushko (https://olich.me)
  * @dev 
  */
-contract Land is BaseAsset {   
+contract Building is BaseAsset {
 
-    constructor() public BaseAsset("VLand", "LND") {}
+    constructor() public BaseAsset("VBuilding", "BLD") {}
 
     /**
      * @dev Used create a new land nft with token url metadata and unique geohash
@@ -18,12 +18,12 @@ contract Land is BaseAsset {
      * @param _geohash geohash string
      * @param _tokenURI url for token metadata
      */
-    function createLand(address to, string memory _geohash, string memory _tokenURI)
+    function createBuilding(address to, string memory _geohash, string memory _tokenURI)
         public 
         onlyOwner
         returns (uint256)
     {        
-        require(!_geohashExists(_geohash), "Geohash was already used, the land was already created");
+        require(!_geohashExists(_geohash), "Geohash was already used, the building was already created");
        
         uint256 newItemId = _generateTokenId();
         _safeMint(to, newItemId);
