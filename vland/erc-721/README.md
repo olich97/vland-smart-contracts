@@ -1,15 +1,38 @@
-# Basic Sample Hardhat Project
+# Vland ERC-721 Contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Description goes here ...
+# Getting Started
 
-Try running some of the following tasks:
-
+### Compile contracts:
 ```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
+npm run compile
+```
+### Run tests:
+```shell
+npm run test
+```
+### Deploy contracts locally
+1. Start local blockchain:
+```shell
+npm run chain
+```
+
+2. Deploy contracts:
+```shell
+npm run deploy:local
+```
+### Deploy contracts to rinkeby
+1. Make sure to properly configure `.env` file
+2. Deploy contracts:
+```shell
+npm run deploy:rinkeby
+```
+### Linting
+```shell
+npm run lint
+npm run lint:fix
+```
+### Clean artifacts
+```shell
+npm run clean
 ```
