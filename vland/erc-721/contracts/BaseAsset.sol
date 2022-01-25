@@ -26,6 +26,7 @@ contract BaseAsset is ERC721, Ownable {
     // tokentId -> tokenUri
     mapping (uint256 => string) private _tokenURIs;
 
+    // TODO: check if should use more efficient data type for geohashes since the lenght of geohash string is max of 12 characters (with 37.2mm×18.6mm precision)
     // geohash -> tokenId
     mapping (string => uint256) private _geohashTokens;
 

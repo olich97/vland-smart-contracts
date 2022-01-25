@@ -10,7 +10,8 @@
 	   "longitude": 9.731237,
       "country": "Italy",
       "province": "Parma",
-      "region": "Emilia Romagna"
+      "region": "Emilia Romagna",
+      "geohash": "spyvvmn"
    },
    "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9",
    "background_color":"f3f3f3"

@@ -10,7 +10,8 @@
 	   "longitude": -74.0115792558882,
       "country": "United States",
       "province": "New York",
-      "region": "New York"
+      "region": "New York",
+      "geohash": "dr5revd"
    },
    "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9",
    "background_color":"f3f3f3"
