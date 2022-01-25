@@ -13,13 +13,21 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory('Land');
-  const greeter = await Greeter.deploy();
+  // 1. Deploy land contract
+  const Land = await ethers.getContractFactory('Land');
+  const land = await Land.deploy();
+  await land.deployed();
+  console.log('Land deployed to:', land.address);
 
-  await greeter.deployed();
+  // 2. Deploy building contract
+  const Building = await ethers.getContractFactory('Building');
+  const building = await Building.deploy();
+  await building.deployed();
+  console.log('Building deployed to:', building.address);
 
-  console.log('Land deployed to:', greeter.address);
+  // 3. Set land contract to building contract
+  await building.setLandContract(land.address);
+  console.log('The land address %s was set to building contract...', land.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

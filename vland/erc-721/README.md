@@ -1,5 +1,9 @@
 # Vland ERC-721 Contracts
 
+Managing NFTs that represent lands, on which there may be (linked) other NFTs that represent other assets such as buildings, mines, roads, rivers, etc.
+
+
+
 Description goes here ...
 # Getting Started
 

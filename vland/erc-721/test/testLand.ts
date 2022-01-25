@@ -17,58 +17,60 @@ describe('Land Contract', function () {
   let nftOwner2: SignerWithAddress;
   let contractOperator: SignerWithAddress;
 
-  let land: Land;
+  let landContract: Land;
 
   beforeEach(async () => {
     // eslint-disable-next-line no-unused-vars
     [contractOwner, nftOwner1, nftOwner2, contractOperator] = await ethers.getSigners();
 
-    land = (await deployContract(contractOwner, landArtifact)) as unknown as Land;
+    landContract = (await deployContract(contractOwner, landArtifact)) as unknown as Land;
     // approve operator for token transfers
-    await land.connect(nftOwner1).setApprovalForAll(contractOperator.address, true);
+    await landContract.connect(nftOwner1).setApprovalForAll(contractOperator.address, true);
   });
 
   describe('Deployment', function () {
     it("should set the right contract owner", async () => {
-      expect(await land.owner()).to.equal(contractOwner.address);
+      expect(await landContract.owner()).to.equal(contractOwner.address);
     });
   });
   
   describe('Minting', function () {  
-    it("should create correct nft", async function () {
-      const landContract = await land.connect(contractOwner);
-      const tokenGeohash = 'dr5revd'; //https://www.movable-type.co.uk/scripts/geohash.html
-      const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
-      const tokenId = 1;
-      
+    const landNftGeohash = 'spyvvmnh';
+    const landNftUrl = 'http://www.example.com/tokens/1/metadata.json';
+    const landNftId = 1;
+
+    beforeEach(async () => {    
       expect(
-        await landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
+        await landContract.connect(contractOwner).createLand(nftOwner1.address, landNftGeohash, landNftUrl)
       )
-      .to.emit(land, "Transfer")
-      .withArgs(ethers.constants.AddressZero, nftOwner1.address, tokenId);
-
-      // check nft metadata 
-      const tokenUri = await landContract.tokenURI(tokenId);
-      const geohashTokenId = await landContract.tokenFromGeohash(tokenGeohash);
-      expect(tokenUri).to.equal(tokenMetadataUrl);
-      expect(geohashTokenId).to.equal(tokenId);
-
-      // check nft owner
-      const tokenOwner = await landContract.ownerOf(tokenId);
-      expect(tokenOwner).to.equal(nftOwner1.address);
-
-      // check geohash owner
-      const tokenGeohashOwner = await landContract.ownerOfGeohash(tokenGeohash);
-      expect(tokenGeohashOwner).to.equal(nftOwner1.address);
+      .to.emit(landContract, "Transfer")
+      .withArgs(ethers.constants.AddressZero, nftOwner1.address, landNftId);
     });
 
-    it("should fail if same geohash", async function () {      
-      const landContract = await land.connect(contractOwner);
-      const tokenGeohash = 'dr5revd23'; //https://www.movable-type.co.uk/scripts/geohash.html
+    it("should set metadata url", async function () {
+      const tokenUri = await landContract.tokenURI(landNftId);
+      expect(tokenUri).to.equal(landNftUrl);
+    });
+
+    it("should set token owner", async function () { 
+      const tokenOwner = await landContract.ownerOf(landNftId);
+      expect(tokenOwner).to.equal(nftOwner1.address);
+    });
+
+    it("should set geohash", async function () {
+      const geohashTokenId = await landContract.tokenFromGeohash(landNftGeohash);
+      expect(geohashTokenId).to.equal(landNftId);
+    });
+
+    it("should set geohash owner", async function () {
+       const tokenGeohashOwner = await landContract.ownerOfGeohash(landNftGeohash);
+       expect(tokenGeohashOwner).to.equal(nftOwner1.address);
+    });   
+
+    it("should fail if create with the same geohash", async function () {      
+      const tokenGeohash = 'spyvvmnh'; //https://www.movable-type.co.uk/scripts/geohash.html
       const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
 
-      await landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl);
- 
       await expect(
         landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
       ).to.eventually.be.rejectedWith('Geohash was already used, the land was already created');
@@ -77,16 +79,16 @@ describe('Land Contract', function () {
 
   describe('Transfer', function () {    
     it("should transfer token between accounts", async function () {
-      const landContract = await land.connect(contractOwner);      
-      await landContract.createLand(nftOwner1.address, 'sadsa2', 'http://www.example.com/tokens/1/metadata.json');
-      const tokenId = await landContract.tokenFromGeohash('sadsa2');   
+      const landOperations = await landContract.connect(contractOwner);      
+      await landOperations.createLand(nftOwner1.address, 'sadsa2', 'http://www.example.com/tokens/1/metadata.json');
+      const tokenId = await landOperations.tokenFromGeohash('sadsa2');   
 
-      await land.connect(contractOperator)['safeTransferFrom(address,address,uint256)'](nftOwner1.address, nftOwner2.address, tokenId);
+      await landContract.connect(contractOperator)['safeTransferFrom(address,address,uint256)'](nftOwner1.address, nftOwner2.address, tokenId);
       
       // check new owner
-      const newOwner = await landContract.ownerOfGeohash('sadsa2');
+      const newOwner = await landOperations.ownerOfGeohash('sadsa2');
       expect(newOwner).to.equal(nftOwner2.address);
-      expect(await landContract.balanceOf(nftOwner1.address)).to.be.equal(0);
+      expect(await landOperations.balanceOf(nftOwner1.address)).to.be.equal(0);
     });
   });
 });

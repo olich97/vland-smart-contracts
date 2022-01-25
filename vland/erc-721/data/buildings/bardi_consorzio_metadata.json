@@ -3,6 +3,7 @@
     "image": "https://map.cryptovoxels.com/tile/parcel?x=-14.68&y=-10.66",
     "description": "A consorzio building",
     "attributes":{
+       "type": "building",
        "width": 500,
        "height": 500,
        "country": "Italy",

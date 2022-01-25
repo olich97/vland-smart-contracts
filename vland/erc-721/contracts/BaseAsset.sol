@@ -23,11 +23,15 @@ contract BaseAsset is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    // tokentId -> tokenUri
+    /**
+     * @dev mapping from tokentId to tokenUri
+     */
     mapping (uint256 => string) private _tokenURIs;
 
-    // TODO: check if should use more efficient data type for geohashes since the lenght of geohash string is max of 12 characters (with 37.2mm×18.6mm precision)
-    // geohash -> tokenId
+    /**
+     * @dev mapping from geohash to tokenId
+     * TODO: check if should use more efficient data type for geohashes since the lenght of geohash string is max of 12 characters (with 37.2mm×18.6mm precision)
+     */
     mapping (string => uint256) private _geohashTokens;
 
     constructor(string memory _name, string memory _symbol) public ERC721(_name, _symbol) {}
@@ -45,6 +49,19 @@ contract BaseAsset is ERC721, Ownable {
     {
         require(_exists(tokenId), "URI query of nonexistent token");
         return  _tokenURIs[tokenId];
+    }
+
+    /**
+     * @dev Effectively grabs the metadata uri of a geohash
+     * @param _geohash asset geohash
+     */
+    function tokenURIofGeohash(string memory _geohash) 
+        public 
+        view 
+        returns (string memory)
+    {
+        uint256 tokenId = tokenFromGeohash(_geohash);
+        return tokenURI(tokenId);
     }
 
    

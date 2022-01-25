@@ -2,20 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "./BaseAsset.sol";
+import "./ChildAsset.sol";
+// only for debbuging
+import "hardhat/console.sol";
 
 /**
- * @title Contract for building asset non fungible token
+ * @title Contract for a building asset non fungible token
  * @author Oleh Andrushko (https://olich.me)
  * @dev 
  */
-contract Building is BaseAsset {
+contract Building is ChildAsset {
 
-    address private _landContract;
-
-    // building token id -> land geohash
-    mapping (uint256 => string) private _tokenLands;
-
-    constructor() public BaseAsset("VBuilding", "BLD") {}
+    constructor() public ChildAsset("VBuilding", "BLD") {}
 
     /**
      * @dev Create a new unique building nft with token url metadata and unique geohash
@@ -45,46 +43,28 @@ contract Building is BaseAsset {
      * @param _tokenURI url for token metadata
      */
     function createBuildingOnLand(address to, string memory _buildingGeohash, string memory _landGeohash,  string memory _tokenURI)
-        public 
+        external 
         onlyOwner
         returns (uint256)
-    {   
-        
-        //require(!_geohashExists(_buildingGeohash), "Geohash was already used, the building was already created");
-  
+    {           
+        require(!_geohashExists(_buildingGeohash), "Geohash was already used, the building was already created");
         // mint a new building
+        uint256 tokenId = createBuilding(to, _buildingGeohash, _tokenURI);
+        // link a building to land
+        _addAssetToLand(_buildingGeohash, _landGeohash);
 
-        // need to check if land with the geohash exists - call to land contract? and revert minting if not exists
-        // (additionally with the geohash it is possible to check even if building is inside a land or if it is conflicted with others assets)
-
-        // add a land geohash to building
-
+        return tokenId;
     }
 
-    /**
-     * @dev Assigns a land geohash to a building
-     * @param tokenId target token
-     * @param _landGeohash land
+     /**
+     * @dev Assigns a land to a building
+     * @param _buildingGeohash building geohash
+     * @param _landGeohash land geohash
      */
-    function addBuildingToLand(uint256 tokenId, string memory _landGeohash)
-        public 
-    {   
-        // ensure that building exists
-        require(_exists(tokenId), "Land set of nonexistent building token");
-        // ensure that building is not part of any other lands
-        require(_tokenLands[tokenId] != 0, "Building is already associated with a land");
-
-        _tokenLands[tokenId] = _landGeohash;
-    }
-    
-    /**
-     * @dev Set the land (parent) contract address
-     * @param landContract address for interacting with land contract
-     */
-    function setLandContract(address landContract)
-        public 
+    function addBuildingToLand(string memory _buildingGeohash, string memory _landGeohash)
+        external 
         onlyOwner
-    {            
-        _landContract = landContract;
+    {   
+        _addAssetToLand(_buildingGeohash, _landGeohash);
     }
 }
