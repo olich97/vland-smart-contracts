@@ -24,9 +24,19 @@ contract BaseAsset is ERC721, Ownable {
     Counters.Counter private _tokenIds;
 
     /**
+     * @dev Mapping of addresses who are authorized to make calls on a special buy function 
+     */
+    mapping (address => bool) private _authorizedBuyers;
+
+    /**
      * @dev mapping from tokentId to tokenUri
      */
     mapping (uint256 => string) private _tokenURIs;
+
+    /**
+     * @dev mapping from tokentId to price
+     */
+    mapping (uint256 => uint256) private _tokenPrices;
 
     /**
      * @dev mapping from geohash to tokenId
@@ -36,6 +46,96 @@ contract BaseAsset is ERC721, Ownable {
 
     constructor(string memory _name, string memory _symbol) public ERC721(_name, _symbol) {}
     
+    /**
+     * @dev Throws then sender is not the owner of token
+     */
+    modifier onlyTokenOwner(string memory _geohash) 
+    {
+        require(msg.sender == ownerOfGeohash(_geohash), "Caller is not the owner of the geohash");
+        _;
+    }
+
+    /**
+     * @dev Throws then the sender is not an authorized buyer
+     */
+    modifier onlyAuthorizedBuyer() 
+    {
+        require(_authorizedBuyers[msg.sender], "Caller is not an authorized buyer");
+        _;
+    }
+   
+    /**
+     * @dev Add an address to authorized buyers
+     * @param contractAddress target address
+     * @param isAuthorized  is authorized
+     */
+    function setAuthorizedBuyer(address contractAddress, bool isAuthorized)
+        external 
+        onlyOwner
+    {            
+        _authorizedBuyers[contractAddress] = isAuthorized;
+    }
+
+     /**
+     * @dev Buy an asset
+     * @param _geohash target token geohash
+     */
+    function buy(string memory _geohash) 
+        public 
+        payable
+    {
+        _buy(_geohash, msg.sender, msg.value);
+    }
+
+     /**
+     * @dev Buy an asset (used from the land contract) on beahalf a new owner
+     * @param _geohash target token geohash
+     * @notice only authorized buyers (e.g. land cantract address) can call the function
+     */
+    function buy(string memory _geohash, address newOwner) 
+        external 
+        payable
+        onlyAuthorizedBuyer
+    {
+        _buy(_geohash, newOwner, msg.value);
+    }
+
+     /**
+     * @dev Buy an asset
+     * @param _geohash target token geohash
+     * @param newOwner new owner
+     * @param amount price for the token
+     */
+    function _buy(string memory _geohash, address newOwner, uint256 amount) 
+        internal
+    {
+        uint256 price = priceOfGeohash(_geohash);
+        require(amount == price, "Value does not match the token price");
+        uint256 tokenId = tokenFromGeohash(_geohash);
+        address tokenOwner = ownerOf(tokenId);
+        // transfer nft to new owner (caller)
+        // TODO: maybe need to use safeTransferFrom instead
+        _transfer(tokenOwner, newOwner, tokenId);
+        // send cash to the old owner
+        (bool sent, bytes memory data) = tokenOwner.call{value: amount}("");
+        require(sent, "Failed to send amount to token owner");
+    }
+
+
+    /**
+     * @dev Set the price for the token
+     * @param _geohash target token geohash
+     * @param price new price for the token
+     * @notice only owner of the nft can modify the price
+     */
+    function setTokenPrice(string memory _geohash, uint256 price) 
+        public 
+        onlyTokenOwner(_geohash)
+    {
+        uint256 tokenId = tokenFromGeohash(_geohash);
+        _setTokenPrice(tokenId, price);
+    }
+
     /**
      * @dev Effectively grabs the token metadata uri
      * @param tokenId target token
@@ -64,7 +164,19 @@ contract BaseAsset is ERC721, Ownable {
         return tokenURI(tokenId);
     }
 
-   
+    /**
+     * @dev Get token price
+     * @param _geohash asset geohash
+     */
+    function priceOfGeohash(string memory _geohash) 
+        public 
+        view 
+        returns (uint256)
+    {
+        uint256 tokenId = tokenFromGeohash(_geohash);
+        return _tokenPrices[tokenId];
+    }
+
     /**
      * @dev Retrive tokenId associated with geohash
      * @param _geohash target geohash
@@ -87,7 +199,6 @@ contract BaseAsset is ERC721, Ownable {
         view 
         returns (address)
     {
-        require(_geohashExists(_geohash), "Geohash query of nonexistent geohash");
         uint256 tokenId = tokenFromGeohash(_geohash);        
         return ownerOf(tokenId);
     }
@@ -114,6 +225,19 @@ contract BaseAsset is ERC721, Ownable {
     {
         require(_exists(tokenId), "URI set of nonexistent token");
         _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    /**
+     * @dev Sets the price for the token
+     * @param tokenId target token
+     * @param price price in ethers
+     */
+    function _setTokenPrice(uint256 tokenId, uint256 price) 
+        internal 
+        virtual
+    {
+        require(_exists(tokenId), "Price set of nonexistent token");        
+        _tokenPrices[tokenId] = price;
     }
 
     /**

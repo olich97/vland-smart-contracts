@@ -7,6 +7,10 @@ import landArtifact from '../artifacts/contracts/Land.sol/Land.json';
 import {Land} from '../typechain-types/Land';
 import {SignerWithAddress} from '@nomiclabs/hardhat-ethers/signers';
 
+import buildingArtifact from '../artifacts/contracts/Building.sol/Building.json';
+import {Building} from '../typechain-types/Building';
+import { Contract } from 'ethers';
+
 const {deployContract} = waffle;
 chai.use(chaiAsPromised);
 const {expect} = chai;
@@ -15,17 +19,31 @@ describe('Land Contract', function () {
   let contractOwner: SignerWithAddress;
   let nftOwner1: SignerWithAddress;
   let nftOwner2: SignerWithAddress;
+  let nftBuyer: SignerWithAddress;
   let contractOperator: SignerWithAddress;
-
   let landContract: Land;
+  let landContractAddress: any;
+
+  let buildingContractAddress: any;
+  let buildingContract: Building;
+  let buildingContractOwner: SignerWithAddress;
+  let buildingNftOwner: SignerWithAddress;
 
   beforeEach(async () => {
     // eslint-disable-next-line no-unused-vars
-    [contractOwner, nftOwner1, nftOwner2, contractOperator] = await ethers.getSigners();
+    [contractOwner, nftOwner1, nftOwner2, contractOperator, buildingContractOwner, buildingNftOwner, nftBuyer] = await ethers.getSigners();
 
-    landContract = (await deployContract(contractOwner, landArtifact)) as unknown as Land;
-    // approve operator for token transfers
-    await landContract.connect(nftOwner1).setApprovalForAll(contractOperator.address, true);
+     // deploy land contract
+     const genericLand = (await deployContract(contractOwner, landArtifact)) as Contract; 
+     // some hooks in order to get deployed contract address (because I am not using a ethers factory here)
+     landContractAddress = (await genericLand.deployed()).address;
+     landContract = genericLand as unknown as Land;
+
+     // deploy building contract
+     const genericBuilding= (await deployContract(buildingContractOwner, buildingArtifact)) as Contract; 
+     // some hooks in order to get deployed contract address (because I am not using a ethers factory here)
+     buildingContractAddress = (await genericBuilding.deployed()).address;
+     buildingContract = genericBuilding as unknown as Building;
   });
 
   describe('Deployment', function () {
@@ -38,13 +56,19 @@ describe('Land Contract', function () {
     const landNftGeohash = 'spyvvmnh';
     const landNftUrl = 'http://www.example.com/tokens/1/metadata.json';
     const landNftId = 1;
+    const landNftPrice = ethers.utils.parseEther('0.03'); 
+    const buildingNftGeohash = 'builds324';
 
     beforeEach(async () => {    
       expect(
-        await landContract.connect(contractOwner).createLand(nftOwner1.address, landNftGeohash, landNftUrl)
+        await landContract.connect(contractOwner).createLand(nftOwner1.address, landNftGeohash, landNftPrice, landNftUrl)
       )
       .to.emit(landContract, "Transfer")
       .withArgs(ethers.constants.AddressZero, nftOwner1.address, landNftId);
+
+      // create a building nft 
+      await buildingContract.connect(buildingContractOwner)
+                            .createBuilding(buildingNftOwner.address, buildingNftGeohash, landNftPrice, 'buildingNftUrl');
     });
 
     it("should set metadata url", async function () {
@@ -67,28 +91,111 @@ describe('Land Contract', function () {
        expect(tokenGeohashOwner).to.equal(nftOwner1.address);
     });   
 
+    it("should set price", async function () {
+      const geohashPrice= await landContract.priceOfGeohash(landNftGeohash);
+      expect(geohashPrice).to.equal(landNftPrice);
+    });
+
     it("should fail if create with the same geohash", async function () {      
       const tokenGeohash = 'spyvvmnh'; //https://www.movable-type.co.uk/scripts/geohash.html
       const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
 
       await expect(
-        landContract.createLand(nftOwner1.address, tokenGeohash, tokenMetadataUrl)
+        landContract.createLand(nftOwner1.address, tokenGeohash, landNftPrice, tokenMetadataUrl)
       ).to.eventually.be.rejectedWith('Geohash was already used, the land was already created');
+    });
+
+    it("should add building asset", async function () {      
+      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      const assets = await landContract.assetsOf(landNftGeohash);
+      expect(assets.length).to.equal(1);
+      expect(assets[0]).to.equal(buildingNftGeohash);
+    });
+
+    it("should fail if add building asset twice", async function () {    
+      // first one  
+      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      
+      await expect(
+         landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress)
+      ).to.eventually.be.rejectedWith('Asset has already been added');
     });
   });
 
-  describe('Transfer', function () {    
-    it("should transfer token between accounts", async function () {
-      const landOperations = await landContract.connect(contractOwner);      
-      await landOperations.createLand(nftOwner1.address, 'sadsa2', 'http://www.example.com/tokens/1/metadata.json');
-      const tokenId = await landOperations.tokenFromGeohash('sadsa2');   
+  describe('Transfer', function () {  
+    const landNftGeohash = 'spyvvmnh';
+    const landNftUrl = 'http://www.example.com/tokens/1/metadata.json';
+    const landNftId = 1;
+    const landNftPrice = ethers.utils.parseEther('0.03'); 
+    const buildingNftPrice = ethers.utils.parseEther('0.01'); 
+    const buildingNftGeohash = 'builds324';
 
-      await landContract.connect(contractOperator)['safeTransferFrom(address,address,uint256)'](nftOwner1.address, nftOwner2.address, tokenId);
-      
+    beforeEach(async () => {    
+      expect(
+        await landContract.connect(contractOwner).createLand(nftOwner1.address, landNftGeohash, landNftPrice, landNftUrl)
+      )
+      .to.emit(landContract, "Transfer")
+      .withArgs(ethers.constants.AddressZero, nftOwner1.address, landNftId);
+
+      // create a building nft 
+      await buildingContract.connect(buildingContractOwner)
+                            .createBuilding(buildingNftOwner.address, buildingNftGeohash, buildingNftPrice, 'buildingNftUrl');
+
+      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+
+      // set land contract as authorized buyer on asset contract (building)
+      await buildingContract.setAuthorizedBuyer(landContractAddress, true);
+    });
+
+    it("should buy the land", async function () {
+      // prepare
+      const currentBalance = await nftOwner1.getBalance();
+      const finalBalance = currentBalance.add(landNftPrice);
+      // perform buying
+      await landContract.connect(nftOwner2)['buy(string)'](landNftGeohash,  {
+        value: landNftPrice,
+      });
       // check new owner
-      const newOwner = await landOperations.ownerOfGeohash('sadsa2');
+      const newOwner = await landContract.ownerOfGeohash(landNftGeohash);
       expect(newOwner).to.equal(nftOwner2.address);
-      expect(await landOperations.balanceOf(nftOwner1.address)).to.be.equal(0);
+      expect(await landContract.balanceOf(nftOwner1.address)).to.be.equal(0);
+      expect(await landContract.balanceOf(nftOwner2.address)).to.be.equal(1);
+      // check if money transfer worked
+      expect(await nftOwner1.getBalance()).to.be.equal(finalBalance);
+    });
+
+    it("should buy the land with assets", async function () {
+
+      // Actors:
+      // nftOwner1: a owner of a land
+      // buildingNftOwner: a owner of a building associated to the land
+      // nftBuyer:  a guy who want to buy all the staff
+
+       // prepare
+      const landOwnerBalance = await nftOwner1.getBalance();
+      const endLandOwnerBalance = landOwnerBalance.add(landNftPrice);
+      const buildingOwnerBalance = await buildingNftOwner.getBalance();
+      const endBuildingOwnerBalance = buildingOwnerBalance.add(buildingNftPrice);
+
+      // perform buying
+      const totalPrice = landNftPrice.add(buildingNftPrice);
+      await landContract.connect(nftBuyer).buyLandWithAssets(landNftGeohash,  {
+        value: totalPrice,
+      });
+      // check new owner
+      const newOwner = await landContract.ownerOfGeohash(landNftGeohash);
+      expect(newOwner).to.equal(nftBuyer.address);
+      expect(await landContract.balanceOf(nftOwner1.address)).to.be.equal(0);
+      expect(await landContract.balanceOf(nftBuyer.address)).to.be.equal(1);
+
+      const newBuildingOwner = await buildingContract.ownerOfGeohash(buildingNftGeohash);
+      expect(newBuildingOwner).to.equal(nftBuyer.address);
+      expect(await buildingContract.balanceOf(nftOwner1.address)).to.be.equal(0);
+      expect(await buildingContract.balanceOf(nftBuyer.address)).to.be.equal(1);
+
+      // check if money transfer worked
+      expect(await nftOwner1.getBalance()).to.be.equal(endLandOwnerBalance);
+      expect(await buildingNftOwner.getBalance()).to.be.equal(endBuildingOwnerBalance);
     });
   });
 });

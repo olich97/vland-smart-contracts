@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./BaseAsset.sol";
-import "./ChildAsset.sol";
 // only for debbuging
 import "hardhat/console.sol";
 
@@ -11,60 +10,32 @@ import "hardhat/console.sol";
  * @author Oleh Andrushko (https://olich.me)
  * @dev 
  */
-contract Building is ChildAsset {
+contract Building is BaseAsset {
 
-    constructor() public ChildAsset("VBuilding", "BLD") {}
+    uint256 private MIN_TOKEN_PRICE = 1000000000000000; // wei - 0.001 ether
+
+    constructor() public BaseAsset("VBuilding", "BLD") {}
 
     /**
      * @dev Create a new unique building nft with token url metadata and unique geohash
      * @param to address for a receiver of newly created nft 
      * @param _geohash geohash string
+     * @param basePrice starting price for the nft in ethers (min 0.001 ether)
      * @param _tokenURI url for token metadata
      */
-    function createBuilding(address to, string memory _geohash, string memory _tokenURI)
+    function createBuilding(address to, string memory _geohash, uint256 basePrice, string memory _tokenURI)
         public 
         onlyOwner
         returns (uint256)
     {        
         require(!_geohashExists(_geohash), "Geohash was already used, the building was already created");
+        require(basePrice > MIN_TOKEN_PRICE, "Base price for the building should be grether than 0.001 ether");
        
         uint256 newItemId = _generateTokenId();
         _safeMint(to, newItemId);
         _setTokenURI(newItemId, _tokenURI);
         _setTokenGeohash(newItemId, _geohash);
+        _setTokenPrice(newItemId, basePrice);
         return newItemId;
-    }
-
-    /**
-     * @dev Create a unique building on a land
-     * @param to address for a receiver of newly created nft 
-     * @param _buildingGeohash geohash of a building @notice need to be at least 8 characters in order to archive more precission on buildings position
-     * @param _landGeohash geohash of land to associate with the building
-     * @param _tokenURI url for token metadata
-     */
-    function createBuildingOnLand(address to, string memory _buildingGeohash, string memory _landGeohash,  string memory _tokenURI)
-        external 
-        onlyOwner
-        returns (uint256)
-    {           
-        require(!_geohashExists(_buildingGeohash), "Geohash was already used, the building was already created");
-        // mint a new building
-        uint256 tokenId = createBuilding(to, _buildingGeohash, _tokenURI);
-        // link a building to land
-        _addAssetToLand(_buildingGeohash, _landGeohash);
-
-        return tokenId;
-    }
-
-     /**
-     * @dev Assigns a land to a building
-     * @param _buildingGeohash building geohash
-     * @param _landGeohash land geohash
-     */
-    function addBuildingToLand(string memory _buildingGeohash, string memory _landGeohash)
-        external 
-        onlyOwner
-    {   
-        _addAssetToLand(_buildingGeohash, _landGeohash);
     }
 }

@@ -7,6 +7,7 @@
     "clean": "npx hardhat clean",
     "test": "npx hardhat test",
     "chain": "npx hardhat node",
+    "coverage": "npx hardhat coverage",
     "lint": "solhint 'contracts/**/*.sol' & eslint . --ext .ts",
     "lint:fix": "solhint 'contracts/**/*.sol' --fix & eslint . --ext .ts --fix",
     "compile": "npx hardhat compile",

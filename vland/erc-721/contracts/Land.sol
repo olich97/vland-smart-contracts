@@ -2,7 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "./BaseAsset.sol";
-import "./ChildAsset.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+// only for debbuging
+import "hardhat/console.sol";
 
 /**
  * @title Contract for Land non fungible token
@@ -10,6 +13,9 @@ import "./ChildAsset.sol";
  * @dev 
  */
 contract Land is BaseAsset {
+    using SafeMath for uint256;
+
+    uint256 private MIN_TOKEN_PRICE = 10000000000000000; // wei - 0.01 ether
 
     /**
      * @dev mapping from land geohash to assets geohash
@@ -21,54 +27,85 @@ contract Land is BaseAsset {
      * @dev mapping from asset geohash to a contract address (es: building geohash -> contract xxxx)
      * @notice is one to one mapping, meaning that for a single asset we can have only one contract address
      */
-    mapping (string => address) private _assetAddresses;
-
-    /**
-     * @dev Mapping of address of contracts that are authorized to make some calls  
-     */
-    mapping (address => bool) private _authorizedAddresses;
+    mapping (string => address) private _assetAddresses;   
 
     constructor() public BaseAsset("VLand", "LND") {}
-
-    /**
-     * @dev Throws the address is not authorized
-     */
-    modifier OnlyAuthorizedContract() 
-    {
-        require(_authorizedAddresses[msg.sender], "Not allowed caller address");
-        _;
-    }
-
+  
     /**
      * @dev Used create a new land nft with token url metadata and unique geohash
      * @param to address for a receiver of newly created nft 
      * @param _geohash geohash string
+     * @param basePrice starting price for the nft in ethers (min 0 ether)
      * @param _tokenURI url for token metadata
      */
-    function createLand(address to, string memory _geohash, string memory _tokenURI)
+    function createLand(address to, string memory _geohash, uint256 basePrice, string memory _tokenURI)
         public 
         onlyOwner
         returns (uint256)
     {        
         require(!_geohashExists(_geohash), "Geohash was already used, the land was already created");
+        require(basePrice > MIN_TOKEN_PRICE, "Base price for the land should be grether than 0.01 ether");
        
         uint256 newItemId = _generateTokenId();
         _safeMint(to, newItemId);
         _setTokenURI(newItemId, _tokenURI);
         _setTokenGeohash(newItemId, _geohash);
+        _setTokenPrice(newItemId, basePrice);
         return newItemId;
     }
 
     /**
-     * @dev Set the land (parent) contract address
-     * @param contractAddress target address
-     * @param isAuthorized  is authorized
+     * @dev Buy a land with assets
+     * @param _geohash target token geohash
+     * @notice this will only work if the people sending the funds send enough gas to cover the calls to BaseAsset and whatever we do in it :(
      */
-    function setAuthorizedContract(address contractAddress, bool isAuthorized)
-        external 
-        onlyOwner
-    {            
-        _authorizedAddresses[contractAddress] = isAuthorized;
+    function buyLandWithAssets(string memory _geohash) 
+        public 
+        payable
+    {           
+         // getting total price with assets
+        uint mainLandPrice = priceOfGeohash(_geohash);
+        uint256 totalPrice = mainLandPrice;
+
+        string[] memory assets = assetsOf(_geohash);
+        uint256[] memory assetPrices = new uint256[](assets.length);
+        for (uint i = 0; i < assets.length; i++) 
+        {
+            uint256 assetPrice = BaseAsset(_assetAddresses[assets[i]]).priceOfGeohash(assets[i]);
+            totalPrice = SafeMath.add(totalPrice, assetPrice);
+            assetPrices[i] = assetPrice;
+        }
+        require(msg.value == totalPrice, "Value does not match total price of land and it assets");
+
+        // need to buy each asset throught asset contracts
+        // TODO: test owner later
+        for (uint i = 0; i < assets.length; i++) 
+        {
+            BaseAsset(_assetAddresses[assets[i]]).buy{ value: assetPrices[i] }(assets[i], msg.sender);
+        }
+
+        // and finally buy the main land
+        _buy(_geohash, msg.sender, mainLandPrice);
+    }
+
+    /**
+     * @dev Get complete price of land with assets
+     * @param _geohash target token geohash
+     */
+    function priceWithAssetsOfGeohash(string memory _geohash) 
+        public 
+        view 
+        returns (uint256)
+    {
+        uint256 totalPrice = priceOfGeohash(_geohash);
+        string[] memory _assets = assetsOf(_geohash);
+        for (uint i = 0; i < _assets.length; i++) 
+        {
+            uint256 assetPrice = BaseAsset(_assetAddresses[_assets[i]]).priceOfGeohash(_assets[i]);
+            totalPrice = SafeMath.add(totalPrice, assetPrice);
+        }
+
+        return totalPrice;        
     }
 
     /**
@@ -83,43 +120,17 @@ contract Land is BaseAsset {
     {   
         // ensure that the asset exist on target contract
         require(BaseAsset(_assetContractAddress).ownerOfGeohash(_assetGeohash) != address(0), "Asset does not exist on target contract");
-        _addAsset(_landGeohash, _assetGeohash, _assetContractAddress);
-        // need to call asset contract in order to associate a land to it
-        ChildAsset(_assetContractAddress).addAssetToLandFromParent(_assetGeohash, _landGeohash);
+        _addAsset(_landGeohash, _assetGeohash, _assetContractAddress);       
     }  
-
-    /**
-     * @dev Add an asset to the land
-     * @param _landGeohash land geohash
-     * @param _assetGeohash asset geohash
-     */
-    function addAssetFromChild(string memory _landGeohash, string memory _assetGeohash)
-        external 
-        OnlyAuthorizedContract
-    {   
-       _addAsset(_landGeohash, _assetGeohash, msg.sender);
-    }    
-
-    /**
-     * @dev Get assets
-     * @param _landGeohash land geohash
-     */
-    function assetsOf(string memory _landGeohash)
-        external
-        view
-        returns (string [] memory)
-    {   
-        require(_geohashExists(_landGeohash), "Asset query of nonexistent land"); 
-        return _landAssets[_landGeohash];
-    }
 
     /**
      * @dev Remove an asset from the land
      * @param _landGeohash land geohash
      * @param _assetGeohash asset geohash
      */
-    function _removeAsset(string memory _landGeohash, string memory _assetGeohash)
-        private
+    function removeAsset(string memory _landGeohash, string memory _assetGeohash)
+        external
+        onlyOwner
     {   
         // ensure that land exists
         require(_geohashExists(_landGeohash), "Asset remove of nonexistent land");
@@ -130,6 +141,21 @@ contract Land is BaseAsset {
         delete _landAssets[_landGeohash][_indexOfAsset(_landGeohash, _assetGeohash)];
         delete _assetAddresses[_assetGeohash];
     }
+
+
+    /**
+     * @dev Get assets
+     * @param _landGeohash land geohash
+     */
+    function assetsOf(string memory _landGeohash)
+        public
+        view
+        returns (string [] memory)
+    {   
+        require(_geohashExists(_landGeohash), "Asset query of nonexistent land"); 
+        return _landAssets[_landGeohash];
+    }
+    
 
     /**
      * @dev Get index of land asset in a very bad way :)
