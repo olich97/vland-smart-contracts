@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./BaseAsset.sol";
+import "./ChildAsset.sol";
 
 /**
  * @title Contract for Land non fungible token
@@ -83,6 +84,8 @@ contract Land is BaseAsset {
         // ensure that the asset exist on target contract
         require(BaseAsset(_assetContractAddress).ownerOfGeohash(_assetGeohash) != address(0), "Asset does not exist on target contract");
         _addAsset(_landGeohash, _assetGeohash, _assetContractAddress);
+        // need to call asset contract in order to associate a land to it
+        ChildAsset(_assetContractAddress).addAssetToLandFromParent(_assetGeohash, _landGeohash);
     }  
 
     /**

@@ -69,13 +69,38 @@ contract ChildAsset is BaseAsset {
     }    
 
     /**
+     * @dev Assigns a land to a building (for land contract operation)
+     * @param _assetGeohash target token
+     * @param _landGeohash land
+     * TODO: NEED TO ADD AUTHORIZATION LAND FROM CONTRACT CALLS
+     */
+    function addAssetToLandFromParent(string memory _assetGeohash, string memory _landGeohash)
+        external 
+    {   
+        _setAssetLand(_assetGeohash, _landGeohash);
+    }
+
+    /**
      * @dev Assigns a land to a building
      * @param _assetGeohash target token
      * @param _landGeohash land
      */
     function _addAssetToLand(string memory _assetGeohash, string memory _landGeohash)
-        internal 
+        internal         
         OnlyValidLand(_landGeohash)
+    {   
+        _setAssetLand(_assetGeohash, _landGeohash);
+        // call land contract in order to add current building to the land
+        _landContract.addAssetFromChild(_landGeohash, _assetGeohash);
+    }
+
+    /**
+     * @dev Set a land to a an asset
+     * @param _assetGeohash target token
+     * @param _landGeohash land
+     */
+    function _setAssetLand(string memory _assetGeohash, string memory _landGeohash)
+        private 
     {   
         // ensure that asset exists
         require(_geohashExists(_assetGeohash), "Land set of nonexistent asset token");
@@ -83,8 +108,5 @@ contract ChildAsset is BaseAsset {
         require(bytes(_tokenLandGeohashes[_assetGeohash]).length == 0, "Asset is already associated with a land");
 
         _tokenLandGeohashes[_assetGeohash] = _landGeohash;
-
-        // TODO: call land contract in order to add current building to the land
-        _landContract.addAssetFromChild(_landGeohash, _assetGeohash);
     }
 }
