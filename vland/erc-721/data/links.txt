@@ -1,0 +1,16 @@
+NY Land Image -> https://ipfs.io/ipfs/QmVGGWPqGZWGBiGNwXa2hYopyxM5QLtykc1zi1ATCAMa2m
+Bardi Land Image -> https://ipfs.io/ipfs/Qma6xazMrgSQXkHsLPByfJAgM4dbD5JsGxKret9ACdCFpg
+Bardi Building Image -> https://ipfs.io/ipfs/QmXxzbyHmqAMAkGGKQ9Latca4eQqEHshBJiowg4LJLpnxd
+
+GeoHash decoder: https://www.movable-type.co.uk/scripts/geohash.html
+Bardi Building Geohash: spyvvmnh
+Bardi Land Geohash: spyvvmn
+NY Land Geohash: dr5revd
+
+------------------------------
+
+NY Land Metadata URI: https://ipfs.io/ipfs/QmVaAk2YXdwZtM9aMW31HXx7oBfgKPYMWuAww7FKFJU4FK
+Bardi Land Metadata URI: https://ipfs.io/ipfs/QmViZUKjuHDXyzi3sN6xGut1R4Bphqy3sR82XupoKpijbn
+Bardi Building Metadata URI: https://ipfs.io/ipfs/QmacWR3NPX1tkTXec27m3gioGqHny89miqUhLq1y3pEk1Q
+
+

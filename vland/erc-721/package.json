@@ -12,7 +12,7 @@
     "lint:fix": "solhint 'contracts/**/*.sol' --fix & eslint . --ext .ts --fix",
     "compile": "npx hardhat compile",
     "deploy:local": "npx hardhat run --network localhost scripts/deploy.ts",
-    "deploy:rinkeby": "npx hardhat run --network rinkeby scripts/deploy.ts"
+    "deploy:ropsten": "npx hardhat run --network ropsten scripts/deploy.ts"
   },
   "repository": {
     "type": "git",

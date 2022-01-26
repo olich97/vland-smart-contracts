@@ -14,7 +14,7 @@ contract Building is BaseAsset {
 
     uint256 private MIN_TOKEN_PRICE = 1000000000000000; // wei - 0.001 ether
 
-    constructor() public BaseAsset("VBuilding", "BLD") {}
+    constructor() public BaseAsset("VBuilding ERC721", "BLD721") {}
 
     /**
      * @dev Create a new unique building nft with token url metadata and unique geohash

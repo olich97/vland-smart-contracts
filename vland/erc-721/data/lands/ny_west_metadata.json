@@ -1,6 +1,6 @@
 {
    "name": "New York, West Street",
-   "image": "https://map.cryptovoxels.com/tile/parcel?x=-14.68&y=-10.66",
+   "image": "https://ipfs.io/ipfs/QmVGGWPqGZWGBiGNwXa2hYopyxM5QLtykc1zi1ATCAMa2m",
    "description": "100mX100m parcel of New York City West Street",
    "attributes":{
       "width": 100,
@@ -13,6 +13,5 @@
       "region": "New York",
       "geohash": "dr5revd"
    },
-   "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9",
-   "background_color":"f3f3f3"
+   "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9"
 }

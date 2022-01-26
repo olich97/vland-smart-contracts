@@ -57,6 +57,7 @@ describe('Land Contract', function () {
     const landNftUrl = 'http://www.example.com/tokens/1/metadata.json';
     const landNftId = 1;
     const landNftPrice = ethers.utils.parseEther('0.03'); 
+    const buildingNftPrice = ethers.utils.parseEther('0.02'); 
     const buildingNftGeohash = 'builds324';
 
     beforeEach(async () => {    
@@ -68,7 +69,7 @@ describe('Land Contract', function () {
 
       // create a building nft 
       await buildingContract.connect(buildingContractOwner)
-                            .createBuilding(buildingNftOwner.address, buildingNftGeohash, landNftPrice, 'buildingNftUrl');
+                            .createBuilding(buildingNftOwner.address, buildingNftGeohash, buildingNftPrice, 'buildingNftUrl');
     });
 
     it("should set metadata url", async function () {
@@ -96,6 +97,12 @@ describe('Land Contract', function () {
       expect(geohashPrice).to.equal(landNftPrice);
     });
 
+    it("should set price with assets", async function () {
+      await landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      const geohashPrice = await landContract.priceWithAssetsOfGeohash(landNftGeohash);
+      expect(geohashPrice).to.equal(landNftPrice.add(buildingNftPrice));
+    });
+
     it("should fail if create with the same geohash", async function () {      
       const tokenGeohash = 'spyvvmnh'; //https://www.movable-type.co.uk/scripts/geohash.html
       const tokenMetadataUrl = 'http://www.example.com/tokens/1/metadata.json';
@@ -105,21 +112,34 @@ describe('Land Contract', function () {
       ).to.eventually.be.rejectedWith('Geohash was already used, the land was already created');
     });
 
-    it("should add building asset", async function () {      
-      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+    it("should set asset", async function () {      
+      await landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
       const assets = await landContract.assetsOf(landNftGeohash);
       expect(assets.length).to.equal(1);
       expect(assets[0]).to.equal(buildingNftGeohash);
     });
 
-    it("should fail if add building asset twice", async function () {    
+    it("should fail if set same asset twice", async function () {    
       // first one  
-      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      await landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
       
       await expect(
-         landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress)
+         landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress)
       ).to.eventually.be.rejectedWith('Asset has already been added');
     });
+
+    it("should remove asset", async function () {     
+      // need to add one first 
+      await landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      const assets = await landContract.assetsOf(landNftGeohash);
+      expect(assets.length).to.equal(1);
+      expect(assets[0]).to.equal(buildingNftGeohash);
+      // removing and check
+      await landContract.removeAsset(landNftGeohash, buildingNftGeohash);
+      const assetsLater = await landContract.assetsOf(landNftGeohash);
+      expect(assetsLater.length).to.equal(0);
+    });
+    
   });
 
   describe('Transfer', function () {  
@@ -141,7 +161,7 @@ describe('Land Contract', function () {
       await buildingContract.connect(buildingContractOwner)
                             .createBuilding(buildingNftOwner.address, buildingNftGeohash, buildingNftPrice, 'buildingNftUrl');
 
-      await landContract.addAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
+      await landContract.setAsset(landNftGeohash, buildingNftGeohash, buildingContractAddress);
 
       // set land contract as authorized buyer on asset contract (building)
       await buildingContract.setAuthorizedBuyer(landContractAddress, true);

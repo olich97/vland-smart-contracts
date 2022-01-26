@@ -58,6 +58,7 @@ contract Land is BaseAsset {
      * @dev Buy a land with assets
      * @param _geohash target token geohash
      * @notice this will only work if the people sending the funds send enough gas to cover the calls to BaseAsset and whatever we do in it :(
+     * TODO: too long and heavy function, need some refactoring here
      */
     function buyLandWithAssets(string memory _geohash) 
         public 
@@ -78,7 +79,6 @@ contract Land is BaseAsset {
         require(msg.value == totalPrice, "Value does not match total price of land and it assets");
 
         // need to buy each asset throught asset contracts
-        // TODO: test owner later
         for (uint i = 0; i < assets.length; i++) 
         {
             BaseAsset(_assetAddresses[assets[i]]).buy{ value: assetPrices[i] }(assets[i], msg.sender);
@@ -114,13 +114,13 @@ contract Land is BaseAsset {
      * @param _assetGeohash asset geohash
      * @param _assetContractAddress the contract address of target asset geohash
      */
-    function addAsset(string memory _landGeohash, string memory _assetGeohash, address _assetContractAddress)
+    function setAsset(string memory _landGeohash, string memory _assetGeohash, address _assetContractAddress)
         external 
         onlyOwner
     {   
         // ensure that the asset exist on target contract
         require(BaseAsset(_assetContractAddress).ownerOfGeohash(_assetGeohash) != address(0), "Asset does not exist on target contract");
-        _addAsset(_landGeohash, _assetGeohash, _assetContractAddress);       
+        _setAsset(_landGeohash, _assetGeohash, _assetContractAddress);       
     }  
 
     /**
@@ -136,12 +136,24 @@ contract Land is BaseAsset {
         require(_geohashExists(_landGeohash), "Asset remove of nonexistent land");
         // ensure that the asset exists
         require(_assetAddresses[_assetGeohash] != address(0), "Asset remove of non existing asset");
-       
-        // remove asset
-        delete _landAssets[_landGeohash][_indexOfAsset(_landGeohash, _assetGeohash)];
+        _removeLandAsset(_landGeohash, _assetGeohash);
         delete _assetAddresses[_assetGeohash];
     }
 
+    /**
+     * @dev Remove an asset from the land array
+     * @param _landGeohash land geohash
+     * @param _assetGeohash asset geohash
+     * @notice another a little bit expensive function
+     */
+    function _removeLandAsset(string memory _landGeohash, string memory _assetGeohash) 
+        private
+    {
+        for(uint i = _indexOfAsset(_landGeohash, _assetGeohash); i < _landAssets[_landGeohash].length-1; i++){
+            _landAssets[_landGeohash][i] = _landAssets[_landGeohash][i+1];      
+        }
+        _landAssets[_landGeohash].pop();
+    }
 
     /**
      * @dev Get assets
@@ -183,7 +195,7 @@ contract Land is BaseAsset {
      * @param _assetGeohash asset geohash
      * @param _assetContractAddress the contract address of target asset geohash
      */
-    function _addAsset(string memory _landGeohash, string memory _assetGeohash, address _assetContractAddress)
+    function _setAsset(string memory _landGeohash, string memory _assetGeohash, address _assetContractAddress)
         private 
     {   
         // ensure that land exists

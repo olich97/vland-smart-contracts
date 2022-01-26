@@ -25,9 +25,21 @@ async function main() {
   await building.deployed();
   console.log('Building deployed to:', building.address);
 
-  // 3. Set land contract to building contract
-  await building.setLandContract(land.address);
-  console.log('The land address %s was set to building contract...', land.address);
+  // 3. Set land contract as authorized building buyer
+  await building.setAuthorizedBuyer(land.address, true);
+  console.log('The land address %s was set as authorized buyer...', land.address);
+
+  // 4. Mint 2 lands
+
+  // 5. Mint 2 buildings
+
+  // 6. Add building to a land
+
+  // 7. Buy land with a building
+
+  // 8. Buy a building
+
+  // 9. Buy a land
 }
 
 // We recommend this pattern to be able to use async/await everywhere

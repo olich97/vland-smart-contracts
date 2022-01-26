@@ -66,12 +66,24 @@ describe('Building Contract', function () {
     it("should set geohash owner", async function () {
        const tokenGeohashOwner = await buildingContract.ownerOfGeohash(buildingNftGeohash);
        expect(tokenGeohashOwner).to.equal(nftOwner1.address);
-    });   
+    });
+
+    it("should set token uri of geohash", async function () {
+      const tokenUri = await buildingContract.tokenURIofGeohash(buildingNftGeohash);     
+      expect(tokenUri).to.equal(buildingNftUrl);  
+    });
 
     it("should set price", async function () {
       const geohashPrice= await buildingContract.priceOfGeohash(buildingNftGeohash);
       expect(geohashPrice).to.equal(buildingNftPrice);
     });
+
+    it("should set new price", async function () {
+      const newPrice = ethers.utils.parseEther('0.023');
+      await buildingContract.connect(nftOwner1).setTokenPrice(buildingNftGeohash, newPrice);
+      const geohashPrice= await buildingContract.priceOfGeohash(buildingNftGeohash);
+      expect(geohashPrice).to.equal(newPrice);
+    });   
 
     it("should fail if create with the same geohash", async function () {      
       const tokenGeohash = 'spyvvmnh'; //https://www.movable-type.co.uk/scripts/geohash.html
