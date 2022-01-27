@@ -4,7 +4,16 @@
   "description": "Solidity Smart Contracts ERC-1155 standard for NFTs that represent lands, buildings, roads etc.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "npx hardhat clean",
+    "test": "npx hardhat test",
+    "chain": "npx hardhat node",
+    "coverage": "npx hardhat coverage",
+    "lint": "solhint 'contracts/**/*.sol' & eslint . --ext .ts",
+    "lint:fix": "solhint 'contracts/**/*.sol' --fix & eslint . --ext .ts --fix",
+    "compile": "npx hardhat compile",
+    "deploy:local": "npx hardhat run --network localhost scripts/deploy.ts",
+    "deploy:ropsten": "npx hardhat run --network ropsten scripts/deploy.ts",
+    "deploy:rinkeby": "npx hardhat run --network rinkeby scripts/deploy.ts"
   },
   "repository": {
     "type": "git",
@@ -18,10 +27,40 @@
   "author": "Oleh Andrushko",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/olich97/nft-smart-contracts/issues"
+    "url": "https://github.com/olich97/nft-smart-contracts.git/issues"
   },
-  "homepage": "https://github.com/olich97/nft-smart-contracts#readme",
+  "homepage": "https://github.com/olich97/nft-smart-contracts.git#readme",
   "devDependencies": {
-    "hardhat": "^2.8.2"
+    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "@nomiclabs/hardhat-solhint": "^2.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "@openzeppelin/contracts": "^4.4.2",
+    "@typechain/ethers-v5": "^9.0.0",
+    "@typechain/hardhat": "^4.0.0",
+    "@types/chai": "^4.3.0",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.7.0",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.3",
+    "hardhat": "^2.8.3",
+    "hardhat-gas-reporter": "^1.0.7",
+    "prettier": "^2.5.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "solhint": "^3.3.6",
+    "solhint-plugin-prettier": "0.0.5",
+    "solidity-coverage": "^0.7.18",
+    "ts-node": "^10.4.0",
+    "typechain": "^7.0.0",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "dotenv": "^11.0.0"
   }
 }
