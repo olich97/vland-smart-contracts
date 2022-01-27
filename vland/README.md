@@ -4,7 +4,7 @@ Vland is an example project, aimed to analyze differences between [ERC-721](http
 
 In particular, as a case of use, we will manage NFTs that represent lands, on which there may be (linked) other NFTs that represent other assets such as buildings, mines, roads, rivers, etc. A user can therefore buy both the ownership of a land, but also of the assets that are connected to it, thus simulating what happens in reality.
 
-Made using:
+Made with ❤️ using:
 - [Solidity](https://docs.soliditylang.org/)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [Hardhat](https://hardhat.org/)
@@ -22,11 +22,13 @@ Made using:
 
 ## Installation
 
-Install my-project with npm
-
 ```bash
-  npm install my-project
-  cd my-project
+1. Go to project folder
+  cd erc-721 
+  # or
+  cd erc-1155
+2. Install dependencies
+  npm install
 ```
     
 ## License

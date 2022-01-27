@@ -60,7 +60,7 @@ npm run deploy:local
 ```shell
 npm run deploy:rinkeby
 # verify target contract
-npx hardhat verify ",CONTRACT ADDRESS" --network rinkeby
+npx hardhat verify "<CONTRACT ADDRESS>" --network rinkeby
 ```
 ### Linting
 ```shell
