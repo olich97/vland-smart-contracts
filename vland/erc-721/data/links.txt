@@ -3,9 +3,9 @@ Bardi Land Image -> https://ipfs.io/ipfs/Qma6xazMrgSQXkHsLPByfJAgM4dbD5JsGxKret9
 Bardi Building Image -> https://ipfs.io/ipfs/QmXxzbyHmqAMAkGGKQ9Latca4eQqEHshBJiowg4LJLpnxd
 
 GeoHash decoder: https://www.movable-type.co.uk/scripts/geohash.html
-Bardi Building Geohash: spyvvmnh -> creating transaction: 0x9771b7ee119d8bb3f54b6ef59127be8805f558f05064bfb125d862e8d22344d7
-Bardi Land Geohash: spyvvmn -> creating transaction: 0xfde5d7f98f035e3a332fcb0e2668efa067be38b620e11c01f342d618fb64f216
-NY Land Geohash: dr5revd -> creating transaction: 0xe10e77da15cb9cc2fe4a6ec4eca0a62d9f0313e157b88efa7f8225c17c317092
+Bardi Building Geohash: spyvvmnh 
+Bardi Land Geohash: spyvvmn 
+NY Land Geohash: dr5revd 
 
 ------------------------------
 
@@ -13,6 +13,8 @@ NY Land Metadata URI: https://ipfs.io/ipfs/QmVaAk2YXdwZtM9aMW31HXx7oBfgKPYMWuAww
 Bardi Land Metadata URI: https://ipfs.io/ipfs/QmViZUKjuHDXyzi3sN6xGut1R4Bphqy3sR82XupoKpijbn
 Bardi Building Metadata URI: https://ipfs.io/ipfs/QmacWR3NPX1tkTXec27m3gioGqHny89miqUhLq1y3pEk1Q
 
+------------------------------
+
 LAND Smart Contract Address: 0xaeA52B7A5384aeB8Db375B5dACfF3CFDAa7dD164
-BUILDING Smart Contract Address: 0x8b0EFFab8548588145cB6B6e8fFA134F0dBAe0f8
+BUILDING Smart Contract Address: 0xF6a7b2230D62eA8a7F336194106F12Be91D81725
 Contract Owner (Deployer) Address: 0xCCAd7504502935A838400C1dBCf64774b9D1CA74

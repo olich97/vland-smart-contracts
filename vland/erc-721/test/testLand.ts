@@ -43,7 +43,7 @@ describe('Land Contract', function () {
      const genericBuilding= (await deployContract(buildingContractOwner, buildingArtifact)) as Contract; 
      // some hooks in order to get deployed contract address (because I am not using a ethers factory here)
      buildingContractAddress = (await genericBuilding.deployed()).address;
-     buildingContract = genericBuilding as unknown as Building;
+     buildingContract = genericBuilding as unknown as Building;     
   });
 
   describe('Deployment', function () {

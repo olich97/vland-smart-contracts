@@ -105,6 +105,7 @@ contract BaseAsset is ERC721, Ownable {
      * @param _geohash target token geohash
      * @param newOwner new owner
      * @param amount price for the token
+     * TODO: need to check if the caller is already a owner of token
      */
     function _buy(string memory _geohash, address newOwner, uint256 amount) 
         internal

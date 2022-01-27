@@ -4,9 +4,6 @@ pragma solidity ^0.8.0;
 import "./BaseAsset.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-// only for debbuging
-import "hardhat/console.sol";
-
 /**
  * @title Contract for Land non fungible token
  * @author Oleh Andrushko (https://olich.me)
@@ -57,8 +54,8 @@ contract Land is BaseAsset {
     /**
      * @dev Buy a land with assets
      * @param _geohash target token geohash
-     * @notice this will only work if the people sending the funds send enough gas to cover the calls to BaseAsset and whatever we do in it :(
      * TODO: too long and heavy function, need some refactoring here
+     * TODO: add checks in case the caller is already a owner of one of assets
      */
     function buyLandWithAssets(string memory _geohash) 
         public 

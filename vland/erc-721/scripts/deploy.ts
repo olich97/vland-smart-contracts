@@ -12,9 +12,9 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile
   // manually to make sure everything is compiled
   // await hre.run('compile');
+  
+  const contractsOwner = process.env.CONTRACTS_OWNER_ADDRESS || null;
 
-  // TODO: after deploy on ROPSTEN the owner of contracts was not the private key specified in the configurations
-  //const accounts = await ethers.getSigners();
   // 1. Deploy land contract
   const Land = await ethers.getContractFactory('Land');
   const land = await Land.deploy();
@@ -31,17 +31,13 @@ async function main() {
   await building.setAuthorizedBuyer(land.address, true);
   console.log('The land address %s was set as authorized buyer...', land.address);
 
-  // 4. Mint 2 lands
-
-  // 5. Mint 2 buildings
-
-  // 6. Add building to a land
-
-  // 7. Buy land with a building
-
-  // 8. Buy a building
-
-  // 9. Buy a land
+  if(contractsOwner) {
+    // 4. Transfer ownership of the contracts
+    await land.transferOwnership(contractsOwner);
+    await building.transferOwnership(contractsOwner);
+    const newOwner = await land.owner();
+    console.log('Ownership of contracts was transferred to %s', newOwner);
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -2,8 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./BaseAsset.sol";
-// only for debbuging
-import "hardhat/console.sol";
 
 /**
  * @title Contract for a building asset non fungible token
