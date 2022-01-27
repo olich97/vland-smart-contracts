@@ -30,7 +30,19 @@ Made with ❤️ using:
 2. Install dependencies
   npm install
 ```
-    
+
+## Resources
+- [ERC-721](https://eips.ethereum.org/EIPS/eip-721) EIP
+- [ERC-1155](https://eips.ethereum.org/EIPS/eip-1155) EIP
+- [ERC-721](https://docs.openzeppelin.com/contracts/erc721) by Open Zeppelin
+- [ERC-1155](https://docs.openzeppelin.com/contracts/erc1155) by Open Zeppelin
+- [Open Zeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
+- [Decentraland](https://github.com/decentraland/land) Smart Contracts
+- [The Sandbox](https://github.com/thesandboxgame/sandbox-smart-contracts) Smart Contracts
+- [Galtproject](https://github.com/galtproject) Private Property Registry - [Whitepaper](https://github.com/galtproject/galtproject-docs/blob/master/whitepaper/en/Whitepaper.md)
+- [Super World Real Estate](https://github.com/maxwoon/superworld_ar_real_estate)
+- [Blockchain Features in The Sandbox](https://github.com/thesandboxgame/sandbox-smart-contracts)
+- [Decentralized autonomous registry of rights on lands and real estate on Ethereum](https://medium.com/galtproject/decentralized-autonomous-registry-of-rights-on-lands-and-real-estate-on-ethereum-86649041fac)
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
