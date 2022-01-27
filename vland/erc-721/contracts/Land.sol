@@ -29,7 +29,7 @@ contract Land is BaseAsset {
      */
     mapping (string => address) private _assetAddresses;   
 
-    constructor() public BaseAsset("VLand", "LND") {}
+    constructor() public BaseAsset("VLand", "LND721") {}
   
     /**
      * @dev Used create a new land nft with token url metadata and unique geohash

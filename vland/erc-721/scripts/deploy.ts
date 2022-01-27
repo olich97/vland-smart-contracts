@@ -13,6 +13,8 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
+  // TODO: after deploy on ROPSTEN the owner of contracts was not the private key specified in the configurations
+  //const accounts = await ethers.getSigners();
   // 1. Deploy land contract
   const Land = await ethers.getContractFactory('Land');
   const land = await Land.deploy();
