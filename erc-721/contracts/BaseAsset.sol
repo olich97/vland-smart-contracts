@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // ERC721 standard implementation
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -40,7 +40,6 @@ contract BaseAsset is ERC721, Ownable {
 
     /**
      * @dev mapping from geohash to tokenId
-     * TODO: check if should use more efficient data type for geohashes since the lenght of geohash string is max of 12 characters (with 37.2mm×18.6mm precision)
      */
     mapping (string => uint256) private _geohashTokens;
 
@@ -118,8 +117,7 @@ contract BaseAsset is ERC721, Ownable {
         // TODO: maybe need to use safeTransferFrom instead
         _transfer(tokenOwner, newOwner, tokenId);
         // send cash to the old owner
-        (bool sent, bytes memory data) = tokenOwner.call{value: amount}("");
-        require(sent, "Failed to send amount to token owner");
+        Address.sendValue(payable(tokenOwner), amount);
     }
 
 
