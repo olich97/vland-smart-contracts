@@ -18,7 +18,7 @@ contract Building is BaseAsset {
      * @dev Create a new unique building nft with token url metadata and unique geohash
      * @param to address for a receiver of newly created nft 
      * @param _geohash geohash string
-     * @param basePrice starting price for the nft in ethers (min 0.001 ether)
+     * @param basePrice starting price for the nft in wei
      * @param _tokenURI url for token metadata
      */
     function createBuilding(address to, string memory _geohash, uint256 basePrice, string memory _tokenURI)

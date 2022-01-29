@@ -32,7 +32,7 @@ contract Land is BaseAsset {
      * @dev Used create a new land nft with token url metadata and unique geohash
      * @param to address for a receiver of newly created nft 
      * @param _geohash geohash string
-     * @param basePrice starting price for the nft in ethers (min 0 ether)
+     * @param basePrice starting price for the nft in wei
      * @param _tokenURI url for token metadata
      */
     function createLand(address to, string memory _geohash, uint256 basePrice, string memory _tokenURI)
