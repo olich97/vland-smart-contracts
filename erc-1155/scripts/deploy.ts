@@ -16,13 +16,13 @@ async function main() {
 
   //deploy land with proxy
   const Land = await ethers.getContractFactory("Land");
-  const land = await upgrades.deployProxy(Land, ["https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/{id}.json"]);
+  const land = await upgrades.deployProxy(Land, ["https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/{id}.json"], { kind: 'uups'} );
   await land.deployed();
   console.log("Land deployed to:", land.address);
 
   // deploy Building with proxy 
   const Building = await ethers.getContractFactory("Building");
-  const building = await upgrades.deployProxy(Building, ["https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/{id}.json"]);
+  const building = await upgrades.deployProxy(Building, ["https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/{id}.json"], { kind: 'uups'} );
   await building.deployed();
   console.log("Building deployed to:", building.address);
 
