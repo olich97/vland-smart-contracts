@@ -56,9 +56,8 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
     {        
         require(!_geohashExists(_geohash), "The asset was already created for geohash");
         require(basePrice > _getTokenPrice(), "Incorrect base price for the asset");
-        // generating token id
-        _tokenIds.increment();
-        uint256 newItemId = _tokenIds.current();
+        // generating token id   
+        uint256 newItemId = _generateTokenId();
         // 
         _mint(to, newItemId, 1, '');
         // keeping track of geohashes
@@ -77,19 +76,16 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
     function _createManyAssets(address to, string[] memory _geohashes, uint256[] memory _basePrices)
         internal 
     {        
-        uint256[] memory newItemIds;
-        uint[] memory amounts;
+        uint256[] memory newItemIds = new uint256[](_geohashes.length);
+        uint[] memory amounts = new uint[](_geohashes.length);
         for (uint256 i = 0; i < _geohashes.length; i++) 
         {
             require(!_geohashExists(_geohashes[i]), "The asset was already created for one of  geohashes");
             require(_basePrices[i] > _getTokenPrice(), "Incorrect base price for one of assets");
-            //generating id
-            _tokenIds.increment();
-            uint256 tokenId = _tokenIds.current();
-            //newItemIds.push(tokenId);
+            //generating id            
+            uint256 tokenId = _generateTokenId();            
             newItemIds[i] = tokenId;
             // always 1 per token
-            //amounts.push(1);
             amounts[i] = 1;
         } 
         // ERC 1155 mint function: many unique nft of fixed amount 1
@@ -105,6 +101,17 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
     }
 
     /**
+     * @dev Buy am asset
+     * @param _geohash target token geohash
+     */
+    function buyAsset(address buyer, string memory _geohash) 
+        external 
+        payable
+    {       
+        _buyAsset(buyer, _geohash, msg.value);
+    }   
+
+    /**
      * @dev Buy an asset
      * @param buyer new owner
      * @param _geohash target token geohash     
@@ -117,11 +124,10 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
         uint256 tokenPrice = _tokenPrices[tokenId];
         require(price == tokenPrice, "Value does not match the token price");
         address tokenOwner = ownerOf(tokenId);
-        require(tokenOwner == buyer, "Buyer is already a owner of this token");
-        // need to aprove the buyer first?
-        setApprovalForAll(buyer, true);
+        require(tokenOwner != buyer, "Buyer is already a owner of this token");
         // transfer nft to new owner (caller, buyer)
         safeTransferFrom(tokenOwner, buyer, tokenId, 1, '');
+        _tokenOwners[tokenId] = buyer;
         // send cash to the old owner
         AddressUpgradeable.sendValue(payable(tokenOwner), price);
     }
@@ -137,7 +143,6 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
         internal
     {
         require(priceOfGeohashes(_geohashes) == amount, "Total amount is not equal to the total price of assets");
-        setApprovalForAll(buyer, true);
         for (uint256 i = 0; i < _geohashes.length; i++)
         {
             uint256 tokenId = tokenOfGeohash(_geohashes[i]);
@@ -145,8 +150,9 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
             // if buyer already has this token, escude from transfer?
             if(tokenOwner != buyer) 
             {
-                safeTransferFrom(tokenOwner, buyer, tokenId, 1, '');
+                safeTransferFrom(tokenOwner, buyer, tokenId, 1, '');                
                 AddressUpgradeable.sendValue(payable(tokenOwner), _tokenPrices[tokenId]);
+                _tokenOwners[tokenId] = buyer;
             }
         }
     }
@@ -167,6 +173,17 @@ abstract contract BaseAsset is Initializable, ERC1155Upgradeable, OwnableUpgrade
             totalPrice = SafeMathUpgradeable.add(totalPrice, _tokenPrices[tokenId]);
         }
         return totalPrice;
+    }
+
+    /**
+     * @dev Generate unique tokenId
+     */
+    function _generateTokenId() 
+        internal 
+        returns (uint256)
+    {
+         _tokenIds.increment();
+         return _tokenIds.current();
     }
 
     /**

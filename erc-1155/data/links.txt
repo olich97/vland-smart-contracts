@@ -1,0 +1,23 @@
+NY Land Image -> https://ipfs.io/ipfs/QmVGGWPqGZWGBiGNwXa2hYopyxM5QLtykc1zi1ATCAMa2m
+Bardi Land Image -> https://ipfs.io/ipfs/Qma6xazMrgSQXkHsLPByfJAgM4dbD5JsGxKret9ACdCFpg
+Bardi Building Image -> https://ipfs.io/ipfs/QmXxzbyHmqAMAkGGKQ9Latca4eQqEHshBJiowg4LJLpnxd
+
+GeoHash decoder: https://www.movable-type.co.uk/scripts/geohash.html
+Bardi Building Geohash: spyvvmnh 
+Bardi Land Geohash: spyvvmn 
+NY Land Geohash: dr5revd 
+
+------------------------------
+
+NY Land Metadata URI: https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/0000000000000000000000000000000000000000000000000000000000000002.json
+Bardi Land Metadata URI: https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/0000000000000000000000000000000000000000000000000000000000000001.json
+Bardi Building Metadata URI: https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/0000000000000000000000000000000000000000000000000000000000000001.json
+
+Land base: https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/{id}.json
+Building base: https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/{id}.json
+
+------------------------------
+
+LAND Smart Contract Address: 
+BUILDING Smart Contract Address: 
+Contract Owner (Deployer) Address: 

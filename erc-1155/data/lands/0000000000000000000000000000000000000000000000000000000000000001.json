@@ -1,0 +1,17 @@
+{
+   "name": "Bardi, Piazza Vittoria - ERC1155",
+   "image": "https://ipfs.io/ipfs/Qma6xazMrgSQXkHsLPByfJAgM4dbD5JsGxKret9ACdCFpg",
+   "description": "500x500 parcel of city main square",
+   "attributes":{
+      "width": 500,
+      "height": 500,
+      "elevation": 637,
+	   "latitude": 44.632004,
+	   "longitude": 9.731237,
+      "country": "Italy",
+      "province": "Parma",
+      "region": "Emilia Romagna",
+      "geohash": "spyvvmn"
+   },
+   "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9"
+}

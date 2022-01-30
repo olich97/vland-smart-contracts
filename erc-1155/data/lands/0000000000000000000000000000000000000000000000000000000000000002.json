@@ -1,0 +1,17 @@
+{
+   "name": "New York, West Street - ERC1155",
+   "image": "https://ipfs.io/ipfs/QmVGGWPqGZWGBiGNwXa2hYopyxM5QLtykc1zi1ATCAMa2m",
+   "description": "100mX100m parcel of New York City West Street",
+   "attributes":{
+      "width": 100,
+      "height": 100,
+      "elevation": 0,
+	   "latitude": 40.72366204555059,
+	   "longitude": -74.0115792558882,
+      "country": "United States",
+      "province": "New York",
+      "region": "New York",
+      "geohash": "dr5revd"
+   },
+   "external_url": "https://goo.gl/maps/cRhsY8hQVnEALkeu9"
+}

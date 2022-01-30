@@ -1,0 +1,16 @@
+{
+    "name": "Bardi, Consorzio - ERC1155",
+    "image": "https://ipfs.io/ipfs/QmXxzbyHmqAMAkGGKQ9Latca4eQqEHshBJiowg4LJLpnxd",
+    "description": "A consorzio building",
+    "attributes":{
+       "width": 500,
+       "height": 500,
+       "city": "Parma",
+       "country": "Italy",
+       "province": "Parma",
+       "region": "Emilia Romagna",
+       "address": "via Vittoria 15",
+       "geohash": "spyvvmnh"
+    },
+    "external_url": "https://goo.gl/maps/jZXtuhjEfm1EpbFE7"
+ }
