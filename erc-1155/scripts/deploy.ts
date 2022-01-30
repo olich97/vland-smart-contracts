@@ -21,7 +21,7 @@ async function main() {
   console.log("Land deployed to:", land.address);
 
   // deploy Building with proxy 
-  const Building = await ethers.getContractFactory("Land");
+  const Building = await ethers.getContractFactory("Building");
   const building = await upgrades.deployProxy(Building, ["https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/{id}.json"]);
   await building.deployed();
   console.log("Building deployed to:", building.address);
