@@ -8,11 +8,12 @@ Made with ❤️ using:
 - [Solidity](https://docs.soliditylang.org/)
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [Hardhat](https://hardhat.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- ... and many other libraries
 
 ## Project Structure
 - [erc-721](erc-721)
 - [erc-1155](erc-1155)
-- [documentation](docs)
 
 ## Requirements
 - [NodeJs](https://nodejs.org/it/)
