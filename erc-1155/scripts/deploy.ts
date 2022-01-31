@@ -18,13 +18,17 @@ async function main() {
   const Land = await ethers.getContractFactory("Land");
   const land = await upgrades.deployProxy(Land, ["https://gateway.pinata.cloud/ipfs/QmRKAiFn57HhMqxT3hu4FPHiB7aJitygaZeX7KGbjPcped/{id}.json"], { kind: 'uups'} );
   await land.deployed();
-  console.log("Land deployed to:", land.address);
+  console.log("Land proxy deployed to:", land.address);
+  const landImplAddress = await upgrades.erc1967.getImplementationAddress(land.address);
+  console.log("Land implementation deployed to:", landImplAddress);
 
   // deploy Building with proxy 
   const Building = await ethers.getContractFactory("Building");
   const building = await upgrades.deployProxy(Building, ["https://gateway.pinata.cloud/ipfs/QmPkRra3s54jiSENAf36hXfDkk9FDbWbbH1qih3k7jmxgG/{id}.json"], { kind: 'uups'} );
   await building.deployed();
-  console.log("Building deployed to:", building.address);
+  console.log("Building proxy deployed to:", building.address);
+  const buldingImplAddress = await upgrades.erc1967.getImplementationAddress(building.address);
+  console.log("Building implementation deployed to:", buldingImplAddress);
 
   // approve land contract for buying operations from building
   await building.setApprovalForAll(land.address, true);
